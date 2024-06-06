@@ -30,7 +30,6 @@ To install and use this project, follow these steps:
 
 1. Download and install Forge Mod from the official website.
 2. Place this macro's mod server in your mods folder.
-<<<<<<< HEAD
 3. Install Node.js by downloading the installer from the official website and following the installation instructions.
 4. Download and install AutoHotkey from the official website.
 5. Make sure you include AHK's path folder in your PATH variables. This is for macros that spool AHK scripts execute them.
@@ -44,7 +43,6 @@ To install and use this project, follow these steps:
 4. Clone or download this repository to your local machine.
 5. Open a command prompt or terminal and navigate to the project directory.
 6. Run the following command to install the required Node.js dependencies:
->>>>>>> a0777903b0c1cb8d8835832a5de956bd6da1574a
 
     ```
     npm install
