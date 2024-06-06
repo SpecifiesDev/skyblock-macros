@@ -1,0 +1,8 @@
+{ 
+    "control_server_port": 7070,
+    "spool_auto_hotkey": true,
+    "toggled_macro": "pumpkin",
+    "execution_delay": 1000,
+    "host": "192.168.1.16",
+    "cane_columns": 5
+}

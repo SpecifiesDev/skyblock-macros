@@ -11,11 +11,11 @@
     src="https://code.jquery.com/jquery-3.7.0.js"
     integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
     crossorigin="anonymous"></script>
-	<script>
+    <script>
 
         let toggled;
 
-        $.get("http://192.168.1.16:7070/toggled").then(res => {
+        $.get("<%= ip %>/toggled").then(res => {
             toggled = res.toggled;
 
             if(toggled == true) {
@@ -30,12 +30,12 @@
             if(toggled == false) {
 
                 $(".text").text("Stop");
-                $.get("http://192.168.1.16:7070/start");
+                $.get("<%= ip %>/start");
                 toggled = true;
                 $('body').css('background-color', 'green');
 
             } else if(toggled == true) {
-                $.get("http://192.168.1.16:7070/stop");
+                $.get("<%= ip %>/stop");
                 $(".text").text("Start");
                 toggled = false;
                 $('body').css('background-color', 'red');
@@ -63,8 +63,4 @@
     </style>
 
   </body>
-
-  
-
-
 </html>

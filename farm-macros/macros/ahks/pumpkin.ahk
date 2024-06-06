@@ -1,5 +1,12 @@
 ﻿Esc::ExitApp
 
+$w Up::
+if(toggle:=!toggle) {
+    Send, {w Down}
+} else {
+    Send, {w Up}
+}
+Return
 
 $a Up::
 if(toggle:=!toggle) {
