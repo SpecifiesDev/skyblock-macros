@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Toggle Button</title>
+  </head>
+  <body>
+    <script
+    src="https://code.jquery.com/jquery-3.7.0.js"
+    integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+    crossorigin="anonymous"></script>
+	<script>
+
+        let toggled;
+
+        $.get("http://192.168.1.16:7070/toggled").then(res => {
+            toggled = res.toggled;
+
+            if(toggled == true) {
+                $(".text").text("Stop");
+                $('body').css('background-color', 'green');
+            }
+        });
+
+
+        $(document).on('click', 'body *', () => {
+
+            if(toggled == false) {
+
+                $(".text").text("Stop");
+                $.get("http://192.168.1.16:7070/start");
+                toggled = true;
+                $('body').css('background-color', 'green');
+
+            } else if(toggled == true) {
+                $.get("http://192.168.1.16:7070/stop");
+                $(".text").text("Start");
+                toggled = false;
+                $('body').css('background-color', 'red');
+            }
+
+        });
+
+
+    </script>
+
+    <h1 class = "text">
+        Start
+    </h1>
+
+
+    <style>
+        .text {
+            text-align: center;
+            padding-top: 50%;
+            font-size: 100px;
+        }
+        body  {
+            background-color: red;
+        }
+    </style>
+
+  </body>
+
+  
+
+
+</html>
