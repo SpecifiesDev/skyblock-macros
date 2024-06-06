@@ -41,6 +41,7 @@ app.get('/start', (req, res) => {
     spoolAHKScript();
     row = 1;
     column = 1;
+    robot.keyTap('esc');
     robot.keyTap('d');
     robot.keyTap('delete')
 
