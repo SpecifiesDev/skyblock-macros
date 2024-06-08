@@ -7,6 +7,8 @@ const fs = require('fs');
 // load our config.json file
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
 
+const utils = require('./utils');   
+
 // loop over all .js files in /macros and place them into a map
 const macros = fs.readdirSync(path.join(__dirname, 'macros')).reduce((acc, file) => {
     if (file.includes('.js')) {
@@ -23,6 +25,10 @@ if(!selectedMacro) {
     process.exit(1);
 }
 
+// load our voice actions for keys and functions
+const keyActions = utils.loadKeyActions();
+const functionActions = utils.loadFunctionActions();
+
 // init our express app for our server controller
 const app = express();
 
@@ -35,6 +41,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // create a / route that will render our index.ejs file
 app.get('/button', (req, res) => {
+    console.log(req.headers.host);
     const ip = `http://${config.host}:${config.control_server_port}`;
     res.render('index', {ip});
 });
@@ -82,6 +89,72 @@ app.get('/stop', async (req, res) => {
     });
 });
 
+app.post('/voice/function', async (req, res) => {
+
+
+    const { action } = req.body;
+
+    if(!action) {
+        return res.json({
+            success: false,
+            error: 'No action provided'
+        });
+    }
+
+    if(!functionActions[action]) {
+        return res.json({
+            success: false,
+            error: 'Invalid action provided'
+        });
+    }
+
+    let validAction = functionActions[action];
+
+    if(validAction === 'stop') {
+        await selectedMacro.stop;
+    }
+
+    if(validAction === "start") {
+        if(selectedMacro.name === 'cane') {
+            await selectedMacro.start(config.execution_delay, config.cane_columns);
+        } else {    
+            await selectedMacro.start(config.execution_delay);
+        }
+    }
+
+    return res.json({
+        success: true,
+        message: `Successfully ran ${action}`
+    });
+
+
+
+
+});
+
+app.post('/voice/key', async (req, res) => {    
+
+    const { key } = req.body;
+
+    if(!key) {
+        return res.json({
+            success: false,
+            error: 'No key provided'
+        });
+    }
+
+    if(!keyActions[key]) {
+        return res.json({
+            success: false,
+            error: 'Invalid key provided'
+        });
+    }
+
+    let validKey = keyActions[key];
+
+    robot.keyTap(validKey);
+
+});
 
 // start our express app on the configured port
 app.listen(config.control_server_port, () => {

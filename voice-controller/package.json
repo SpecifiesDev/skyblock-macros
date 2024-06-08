@@ -1,0 +1,14 @@
+{
+  "name": "voice-controller",
+  "version": "1.0.0",
+  "description": "A voice controller for the macro system that allows pre-defined commands to be executed by voice.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SpecifiesDev",
+  "dependencies": {
+    "node-record-lpcm16": "^1.0.1",
+    "vosk": "^0.3.39"
+  }
+}

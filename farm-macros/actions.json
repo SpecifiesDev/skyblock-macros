@@ -1,0 +1,26 @@
+{
+    "key_actions": [
+        {
+            "phrase": "move up",
+            "key": "w",
+            "description": "Key actions allow you to bind a key to a verbal phrase. Upon loading the program will ensure that the configured key is pressable. If not, the key will not load and will alert the end-user."
+        },
+        {
+            "phrase": "move back",
+            "key": "s"
+        }
+    ],
+
+    "function_actions": [
+        {
+            "phrase": "stop program",
+            "function": "stop",
+            "description": "Function to stop the program. Will send a stop signal to the control server, similar to pressing stop on the client."
+        }, 
+        {
+            "phrase": "start program",
+            "function": "start",
+            "description": "Function to start the program. Will send a start signal to the control server, similar to pressing start on the client."
+        }
+    ]
+}
