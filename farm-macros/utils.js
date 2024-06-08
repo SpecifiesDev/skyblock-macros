@@ -32,7 +32,8 @@ const loadKeyActions = () => {
     // map to store loaded actions
     let loaded_actions = {};
     
-    for(let key in key_actions) {
+    for(let index in key_actions) {
+        let key = key_actions[index];
         if(!isValidKey(key.key)) {
             console.error(`Invalid key found in actions.json: ${key}`);
         } else {
@@ -53,11 +54,12 @@ const loadFunctionActions = () => {
     // map to store loaded actions
     let loaded_actions = {};
     
-    for(let func in function_actions) {
+    for(let index in function_actions) {
+        let func = function_actions[index];
         if(!validFunctions.includes(func.function)) {
             console.error(`Invalid function found in actions.json: ${func}`);
         } else {
-            loaded_actions[func.phrase] = function_actions[{func: func.function, phrase: func.phrase}];
+            loaded_actions[func.phrase] = function_actions[{func: func.function, phrase: key.phrase}];
         }
     }
 
