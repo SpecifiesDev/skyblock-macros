@@ -1,5 +1,8 @@
 {
     "model_path": "models/vosk-model-en-us-0.22",
     "sample_rate": 16000,
-    "microphone": "Logitech"
+    "control_server": {
+        "host": "192.168.1.12",
+        "port": "7070"
+    }
 }

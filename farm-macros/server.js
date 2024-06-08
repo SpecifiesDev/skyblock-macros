@@ -92,7 +92,7 @@ app.get('/stop', async (req, res) => {
 app.post('/voice/function', async (req, res) => {
 
 
-    const { action } = req.body;
+    const { action, phrase } = req.body;
 
     if(!action) {
         return res.json({
@@ -101,14 +101,14 @@ app.post('/voice/function', async (req, res) => {
         });
     }
 
-    if(!functionActions[action]) {
+    if(!functionActions[phrase]) {
         return res.json({
             success: false,
             error: 'Invalid action provided'
         });
     }
 
-    let validAction = functionActions[action];
+    let validAction = functionActions[phrase].func;
 
     if(validAction === 'stop') {
         await selectedMacro.stop;
@@ -134,7 +134,7 @@ app.post('/voice/function', async (req, res) => {
 
 app.post('/voice/key', async (req, res) => {    
 
-    const { key } = req.body;
+    const { key, phrase } = req.body;
 
     if(!key) {
         return res.json({
@@ -143,16 +143,21 @@ app.post('/voice/key', async (req, res) => {
         });
     }
 
-    if(!keyActions[key]) {
+    if(!keyActions[phrase]) {
         return res.json({
             success: false,
             error: 'Invalid key provided'
         });
     }
 
-    let validKey = keyActions[key];
+    let validKey = keyActions[phrase].key;
 
     robot.keyTap(validKey);
+
+    return res.json({
+        success: true,
+        message: `Successfully pressed ${key}`
+    });
 
 });
 

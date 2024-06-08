@@ -57,7 +57,7 @@ const loadFunctionActions = () => {
         if(!validFunctions.includes(func.function)) {
             console.error(`Invalid function found in actions.json: ${func}`);
         } else {
-            loaded_actions[func.phrase] = function_actions[{func: func.function, phrase: func.phrase}];
+            loaded_actions[func.phrase] = function_actions[{func: func.function, phrase: key.phrase}];
         }
     }
 

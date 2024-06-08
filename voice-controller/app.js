@@ -11,6 +11,15 @@ const modelPath = config.model_path;
 const sampleRate = config.sample_rate;
 const microphone = config.microphone;
 
+const utils = require('./utils');
+
+// load our available actions
+const actions = JSON.parse(fs.readFileSync('./actions.json'));
+
+// load our valid keys and functions
+let keyActions = utils.loadKeyActions();
+let functionActions = utils.loadFunctionActions();
+
 
 // check if the model location exists, if not exit
 if (!fs.existsSync(modelPath)) {
@@ -48,7 +57,30 @@ micInstance.on('data', (data) => {
         // get the detected transcription
         const transcription = result.text;
 
-        console.log(transcription);
+        let validKey = checkForKeyActions(transcription);
+
+        let validFunc = checkForFunctionActions(transcription);
+
+        let host = `http://${config.control_server.host}:${config.control_server.port}`;
+
+        if(validKey) {
+            console.log(`Detected key action: ${validKey}`);
+
+            axios.post(`${host}/voice/key`, {key: validKey.key, phrase: validKey.phrase}, (err, res) => {
+                
+                console.log(res);
+            });
+
+            
+        } else if(validFunc) { // inclusive else if to ensure that if user says both, we will only execute one action
+            console.log(`Detected function action: ${validFunc}`);
+
+            axios.post(`${host}/voice/function`, {function: validFunc.function}, (err, res) => {
+                console.log(res);
+            }); 
+        }
+
+
 
     } 
 
@@ -57,5 +89,35 @@ micInstance.on('data', (data) => {
 micInstance.on('error', (err) => {
     console.error(`Error in audio stream: ${err}`);
 });
+
+const checkForKeyActions = (transcription) => {
+
+    // get keyvalues
+    const keyValues = Object.values(keyActions);
+
+    for(let keyValue of keyValues) {
+        if(transcription.includes(keyValue)) {
+            return keyValue;
+        }
+    }
+
+    return null;
+
+
+}
+
+const checkForFunctionActions = (transcription) => {
+
+    // get function values
+    const functionValues = Object.values(functionActions);
+
+    for(let functionValue of functionValues) {
+        if(transcription.includes(functionValue)) {
+            return functionValue;
+        }
+    }
+
+    return null;
+}
 
 console.log('Listening for audio...');
