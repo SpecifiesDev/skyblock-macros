@@ -2,6 +2,7 @@
 const vosk = require('vosk');
 const fs = require('fs');
 const mic = require('node-record-lpcm16');
+const axios = require('axios');
 
 // load our config
 const config = JSON.parse(fs.readFileSync('./config.json'));
@@ -45,7 +46,7 @@ const micInstance = mic.record({
 }).stream();
 
 // create a new stream event from the mic instance
-micInstance.on('data', (data) => {
+micInstance.on('data', async (data) => {
 
     // check if the recognizer can accept the mic data
     // if it cannot, log the json string of the error
@@ -57,17 +58,24 @@ micInstance.on('data', (data) => {
         // get the detected transcription
         const transcription = result.text;
 
+        console.log(`Detected transcription: ${transcription}`)
+
         let validKey = checkForKeyActions(transcription);
+
+        console.log(validKey);
 
         let validFunc = checkForFunctionActions(transcription);
 
         let host = `http://${config.control_server.host}:${config.control_server.port}`;
 
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+
         if(validKey) {
             console.log(`Detected key action: ${validKey}`);
 
-            axios.post(`${host}/voice/key`, {key: validKey.key, phrase: validKey.phrase}, (err, res) => {
-                
+            await axios.post(`${host}/voice/key`, {key: validKey.key, phrase: validKey.phrase}, headers).then((res) => {   
                 console.log(res);
             });
 
@@ -76,7 +84,7 @@ micInstance.on('data', (data) => {
             console.log(`Detected function action: ${validFunc}`);
 
             axios.post(`${host}/voice/function`, {function: validFunc.function}, (err, res) => {
-                console.log(res);
+                console.log(res.data);
             }); 
         }
 
@@ -93,11 +101,16 @@ micInstance.on('error', (err) => {
 const checkForKeyActions = (transcription) => {
 
     // get keyvalues
-    const keyValues = Object.values(keyActions);
+    const phrases = Object.values(keyActions);
 
-    for(let keyValue of keyValues) {
-        if(transcription.includes(keyValue)) {
-            return keyValue;
+    console.log('key action 1')
+
+    for (let phrase of phrases) {
+        console.log('key action 2');
+        console.log('Phrase:', phrase);
+        if (transcription.includes(phrase)) {
+            console.log('key action 3');
+            return phrase;
         }
     }
 

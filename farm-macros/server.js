@@ -3,6 +3,7 @@ const express = require('express');
 const axios = require('axios')
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 
 // load our config.json file
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
@@ -32,6 +33,13 @@ const functionActions = utils.loadFunctionActions();
 // init our express app for our server controller
 const app = express();
 
+app.use(express.json());
+app.use(cors({
+    origin: utils.allowLocalNetowrk,
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // configure express to use EJS
 // this allows us to passthrough ip variables to our view
 // making changing machines as simple as changing the config.json file
@@ -40,9 +48,8 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // create a / route that will render our index.ejs file
-app.get('/button', (req, res) => {
-    console.log(req.headers.host);
-    const ip = `http://${config.host}:${config.control_server_port}`;
+app.get('/client', (req, res) => {
+    const ip = `http://${req.headers.host}`;
     res.render('index', {ip});
 });
 
@@ -165,6 +172,8 @@ app.post('/voice/key', async (req, res) => {
 app.listen(config.control_server_port, () => {
     console.log(`Server started on port ${config.control_server_port}`);
 });
+
+
 
 
 

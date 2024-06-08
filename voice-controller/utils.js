@@ -1,5 +1,6 @@
 
 const fs = require('fs');
+const requestIp = require('request-ip');
 
 // a list of valid keys that robot.js can use
 // we will use these to validate user inputted actions
@@ -24,25 +25,29 @@ const isValidKey = (key) => validKeys.includes(key);
 
 
 const loadKeyActions = () => {
+    // Read the JSON file
+    let actions = JSON.parse(fs.readFileSync('./actions.json', 'utf8'));
 
-    let actions = JSON.parse(fs.readFileSync('./actions.json'));
-
+    // Extract key actions
     let key_actions = actions.key_actions;
 
-    // map to store loaded actions
+    // Map to store loaded actions
     let loaded_actions = {};
-    
-    for(let index in key_actions) {
-        let key = key_actions[index];
-        if(!isValidKey(key.key)) {
+
+    // Iterate over key actions
+    for (let keyAction of key_actions) {
+        let key = keyAction.key;
+        let phrase = keyAction.phrase;
+        
+        if (!isValidKey(key)) {
             console.error(`Invalid key found in actions.json: ${key}`);
         } else {
-            loaded_actions[key.phrase] = key_actions[{key: key.key, phrase: key.phrase}];
+            // Store the key with its corresponding phrase
+            loaded_actions[key] = phrase;
         }
     }
 
     return loaded_actions;
-
 }
 
 const loadFunctionActions = () => {
@@ -59,11 +64,30 @@ const loadFunctionActions = () => {
         if(!validFunctions.includes(func.function)) {
             console.error(`Invalid function found in actions.json: ${func}`);
         } else {
-            loaded_actions[func.phrase] = function_actions[{func: func.function, phrase: key.phrase}];
+            loaded_actions[func.phrase] = function_actions[{func: func.function, phrase: func.phrase}];
         }
     }
 
     return loaded_actions;
+
+}
+
+
+const allowLocalNetwork = (req, callback) => {
+
+    // general local ip range of most ISPs. 
+    const localIPRange = "192.168.1";
+
+    // get the ip address of the incoming request
+    let ip = requestIp.getClientIp(req);
+
+    if(ip && ip.includes(localIPRange)) {
+        callback(null, true); // allow cors to go through
+    } // else deny the request
+    else {
+        callback(new Error('Not allowed by CORS policies. IP is not in local-network range.'));
+    
+    }
 
 }
 
@@ -74,10 +98,8 @@ const loadFunctionActions = () => {
 
 
 
-
-
-
 module.exports = {
     loadKeyActions,
-    loadFunctionActions
+    loadFunctionActions,
+    allowLocalNetwork
 };
